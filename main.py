@@ -21,7 +21,7 @@ name_map = {}
 
 @bot.event
 async def on_ready():
-    activity = discord.Game(name="Netflix", type=3)
+    activity = discord.Game(name="멍 때리기", type=2)
     await bot.change_presence(status=discord.Status.idle, activity=activity)
     print('[!] 실행 성공')
     await bot.tree.sync()
@@ -52,7 +52,7 @@ async def say(interaction: discord.Interaction, msg: str):
         await interaction.channel.send(embed=embed)
 
 #유저 아바타 다운로드
-@bot.tree.context_menu(name='Get avatar')
+@bot.tree.context_menu(name='get_avatar')
 async def show_join_date(interaction: discord.Interaction, member: discord.Member):
     php = member.avatar
     embed = discord.Embed(title="download", url=php)
@@ -62,17 +62,35 @@ async def show_join_date(interaction: discord.Interaction, member: discord.Membe
     await interaction.response.send_message('Success!', ephemeral=True)
     await interaction.channel.send(embed=embed)
 
+#궁합
 @bot.tree.command(name='궁합')
 @app_commands.describe(arg1='arg1', arg2='arg2')
 async def comp(interaction: discord.Integration, arg1: str, arg2: str):
-    def calculate_compatibility(str1, str2):
-        sum_str1 = sum(ord(char) for char in str1)
-        sum_str2 = sum(ord(char) for char in str2)
-        compatibility_value = sum_str1 + sum_str2
-        normalized_compatibility = min(compatibility_value / (len(str1) + len(str2)) / 2, 100)
-        return int(normalized_compatibility)
-    
-    await interaction.response.send_message(calculate_compatibility(arg1, arg2), ephemeral=True)
+    await interaction.response.send_message('return', ephemeral=True)
+
+#일괄 음소거
+@commands.has_permissions(administrator=True)
+@bot.tree.command(name='mute_all_voice')
+@app_commands.describe(channel='channel')
+async def voice_channel_mention(interaction: discord.Interaction, channel: discord.VoiceChannel):
+    for i in channel.members:
+        print(i)
+        await i.edit(mute=True)
+    await interaction.response.send_message('mute success!', ephemeral=False)
+
+#일괄 음소거 해제
+@commands.has_permissions(administrator=True)
+@bot.tree.command(name='unmute_all_voice', description='정한 채널에 있는 모든 사용자의 마이크 음소거를 해제합니다.')
+@app_commands.describe(channel='channel')
+async def voice_channel_mention(interaction: discord.Interaction, channel: discord.VoiceChannel):
+    for i in channel.members:
+        print(i)
+        await i.edit(mute=False)
+    await interaction.response.send_message('mute success!', ephemeral=False)
+
+
+
+
 
 with open('token.txt', 'r', encoding='utf8') as f:
     token = f.readline()
